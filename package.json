@@ -1,5 +1,5 @@
 {
-  "name": "your-app",
+  "name": "DependencyChecker",
   "version": "0.1.0",
   "main": "src/main.js",
   "devDependencies": {
@@ -38,8 +38,8 @@
       "electronInstallerDebian": {},
       "electronInstallerRedhat": {},
       "github_repository": {
-        "owner": "",
-        "name": ""
+        "owner": "x140yu",
+        "name": "development-pods-dependency-checker"
       },
       "windowsStoreConfig": {
         "packageName": ""

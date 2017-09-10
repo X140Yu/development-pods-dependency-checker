@@ -8,6 +8,11 @@ A tool which checks your development pod's dependencies for iOS projects written
 
 ## development and run
 
-`> electron .`
+`> yarn install`
+`> electron-forge start`
 
-## Releases
+## publish
+
+`> electron-forge publish`
+
+## releases
