@@ -9,6 +9,7 @@ A tool which checks your development pod's dependencies for iOS projects written
 ## development and run
 
 `> yarn install`
+
 `> electron-forge start`
 
 ## publish
@@ -16,3 +17,9 @@ A tool which checks your development pod's dependencies for iOS projects written
 `> electron-forge publish`
 
 ## releases
+
+[Releases](https://github.com/X140Yu/development-pods-dependency-checker/releases)
+
+## License
+
+MIT
