@@ -1,0 +1,24 @@
+#nav a {
+  display: block;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+#nav {
+  padding: 10px 30px;
+  float: left;
+  width: 30%;
+  height: 100%;
+  overflow: scroll;
+}
+
+#content {
+  padding: 10px 30px;
+  float: left;
+  width: 60%;
+  height: 100%;
+  overflow: scroll;
+}

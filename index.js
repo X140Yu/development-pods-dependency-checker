@@ -1,6 +1,5 @@
 
 document.addEventListener("DOMContentLoaded", function(){
-  
   const ipc = require('electron').ipcRenderer
   
   const selectDirBtn = document.getElementById('select-directory')
@@ -10,14 +9,22 @@ document.addEventListener("DOMContentLoaded", function(){
   })
   
   ipc.on('selected-directory', function (event, files) {
+    handleSelectDirectory(files)
+  })
+  
+  function handleSelectDirectory(files) {
     let isPodDir = checkHasPodfile(files)
     if (isPodDir) {
       document.getElementById('selected-file').innerHTML = `It's a valid path`
       findPodspecs(files[0])
     } else {
-      ipc.send('open-error-dialog', "Error", "It seems that this directory doesn't have a Podfile")
+      showError("Error", "It seems that this directory doesn't have a Podfile")
     }
-  })
+  }
+  
+  function showError(title, subTitle) {
+    ipc.send('open-error-dialog', title, subTitle)    
+  }
   
   function checkHasPodfile(directory) {
     if (directory == undefined) {
@@ -73,28 +80,66 @@ document.addEventListener("DOMContentLoaded", function(){
   
   function findPodspecs(directory) {
     let podspecs = findFiles(directory, /\.podspec.json$/, null)
+    if (podspecs.length === 0) {
+      showError("Error", "Maybe you should build the project first")
+      return
+    }
     let pods = parsePodspecs(podspecs)
     // recursive find dependencies
     pods = trigger(pods)
     console.log(pods)
+    pods = pods.sort((a, b) => {
+      if (a.name < b.name) return -1;
+      if (a.name > b.name) return 1;
+      return 0;
+    })
+
+    let navs = []
+    let lists = []
     let d = document.getElementById('pods')
     pods.forEach(function(element) {
       let div = document.createElement('div')
       let header = document.createElement('h3')
-      header.innerHTML = element["name"]
+      header.innerHTML = element.name
+      header.id = element.name
+      
       div.appendChild(header)
       
+      if (navs.indexOf(element.name) === -1 && element.dependencies.length > 0) {
+        navs.push(element.name)
+      }
+      
       let ul = document.createElement('ul')
-      let dependencies = element["dependencies"].sort()
+      let dependencies = element.dependencies.sort()
       dependencies.forEach(function (dependency) {
         let li = document.createElement('li')
-        li.innerHTML = dependency
+        let a = document.createElement('a')
+        a.innerHTML = dependency
+        a.href = '#' + dependency
         ul.appendChild(li)
+        li.appendChild(a)
       })
       
-      div.appendChild(ul)
-      
+      div.appendChild(ul)      
       d.appendChild(div)
+    })
+
+    renderNavs(navs)
+    renderList(pods)
+  }
+
+  function renderList(pods) {
+    
+
+  }
+
+  function renderNavs(navs) {
+    let fRight = document.getElementById('nav')
+    navs.forEach(e => {
+      let headerA = document.createElement('a')
+      headerA.href = '#' + e
+      headerA.innerText = e
+      fRight.appendChild(headerA)
     })
   }
   
