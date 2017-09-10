@@ -12,10 +12,24 @@ document.addEventListener("DOMContentLoaded", function(){
     handleSelectDirectory(files)
   })
   
+  function clearElement(name) {
+    var myNode = document.getElementById(name);
+    if (myNode == null) {
+      return
+    }
+    var fc = myNode.firstChild;
+    
+    while( fc ) {
+      myNode.removeChild( fc );
+      fc = myNode.firstChild;
+    }
+  } 
+  
   function handleSelectDirectory(files) {
+    clearElement('nav')
+    clearElement('pods')
     let isPodDir = checkHasPodfile(files)
     if (isPodDir) {
-      document.getElementById('selected-file').innerHTML = `It's a valid path`
       findPodspecs(files[0])
     } else {
       showError("Error", "It seems that this directory doesn't have a Podfile")
@@ -93,21 +107,21 @@ document.addEventListener("DOMContentLoaded", function(){
       if (a.name > b.name) return 1;
       return 0;
     })
-
+    
     let navs = []
-    let lists = []
     let d = document.getElementById('pods')
     pods.forEach(function(element) {
       let div = document.createElement('div')
+      if (navs.indexOf(element.name) === -1 && element.dependencies.length > 0) {
+        navs.push(element.name)
+      } else {
+        return
+      }
       let header = document.createElement('h3')
       header.innerHTML = element.name
       header.id = element.name
       
       div.appendChild(header)
-      
-      if (navs.indexOf(element.name) === -1 && element.dependencies.length > 0) {
-        navs.push(element.name)
-      }
       
       let ul = document.createElement('ul')
       let dependencies = element.dependencies.sort()
@@ -123,16 +137,10 @@ document.addEventListener("DOMContentLoaded", function(){
       div.appendChild(ul)      
       d.appendChild(div)
     })
-
-    renderNavs(navs)
-    renderList(pods)
-  }
-
-  function renderList(pods) {
     
-
+    renderNavs(navs)
   }
-
+  
   function renderNavs(navs) {
     let fRight = document.getElementById('nav')
     navs.forEach(e => {
