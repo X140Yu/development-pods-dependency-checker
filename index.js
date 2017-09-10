@@ -18,7 +18,7 @@ document.addEventListener("DOMContentLoaded", function(){
       ipc.send('open-error-dialog', "Error", "It seems that this directory doesn't have a Podfile")
     }
   })
-
+  
   function checkHasPodfile(directory) {
     if (directory == undefined) {
       return false
@@ -28,46 +28,54 @@ document.addEventListener("DOMContentLoaded", function(){
     let fs = require('fs')
     return fs.existsSync(podfilePath)
   }
-
-  function findRependencies(pods, target) {
+  
+  function findDependencies(pods, target) {
     let res = pods.filter(ele => {
       return ele.name === target
     })
-
+    
     if (res[0] == undefined) {
       return []
     }
-
+    
     return res[0].dependencies
   }
-
-  function recursiveFindDependencies(pods) {
+  
+  function trigger(pods) {
     let podsRet = []
     pods.forEach(ele => {
-      let pod = {}
-      pod.name = ele.name
-      pod.dependencies = []
-      ele.dependencies.forEach(dep => {
-        let deps = findRependencies(pods, dep).forEach(e => {
-          if (pod.dependencies.filter(es => es == e).length == 0) {
-            pod.dependencies.push(e)
-          }
-        })
-
-        if (pod.dependencies.filter(es => es == dep).length == 0) {
-          pod.dependencies.push(dep)
+      podsRet.push(recursiveFindDependencies(ele, pods))
+    })
+    return podsRet  
+  }
+  
+  function recursiveFindDependencies(ele, pods) {
+    let pod = {}
+    if (ele.name == undefined) {
+      return
+    }
+    pod.name = ele.name
+    pod.dependencies = []
+    ele.dependencies.forEach(dep => {
+      if (pod.dependencies.filter(es => es == dep).length == 0) {
+        pod.dependencies.push(dep)
+      }
+      let deps = findDependencies(pods, dep).forEach(e => {
+        Array.prototype.push.apply(pod.dependencies, recursiveFindDependencies(e, pods))
+        
+        if (pod.dependencies.filter(es => es == e).length == 0) {
+          pod.dependencies.push(e)
         }
       })
-      podsRet.push(pod)
     })
-    return podsRet
+    return pod
   }
-
+  
   function findPodspecs(directory) {
     let podspecs = findFiles(directory, /\.podspec.json$/, null)
     let pods = parsePodspecs(podspecs)
     // recursive find dependencies
-    pods = recursiveFindDependencies(pods)
+    pods = trigger(pods)
     console.log(pods)
     let d = document.getElementById('pods')
     pods.forEach(function(element) {
@@ -83,16 +91,16 @@ document.addEventListener("DOMContentLoaded", function(){
         li.innerHTML = dependency
         ul.appendChild(li)
       })
-
+      
       div.appendChild(ul)
-
+      
       d.appendChild(div)
     })
   }
-
+  
   const fs = require('fs')
   const path = require('path')
-
+  
   var findFiles = function(folder, pattern = /.*/, callback) {
     var flist = []
     fs.readdirSync(folder).map(function(e) {
@@ -111,7 +119,7 @@ document.addEventListener("DOMContentLoaded", function(){
     })
     return flist
   }
-
+  
   function parsePodspecs(fileNames) {
     let pods = []
     for (let index in fileNames) {
@@ -124,14 +132,14 @@ document.addEventListener("DOMContentLoaded", function(){
       let dependencies = json["dependencies"]
       pod.dependencies = []
       for (var i in dependencies) {
-          var element = dependencies[i];
-          // console.log(i)
-          pod.dependencies.push(i)
+        var element = dependencies[i];
+        // console.log(i)
+        pod.dependencies.push(i)
       }
       pods.push(pod)
     }
-
+    
     return pods
   }
-
+  
 });
