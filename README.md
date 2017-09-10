@@ -1,3 +1,13 @@
-# development-pods-dependency-checker
+# Development Pods Dependency Checker
 
-A tool which checks your development pods' dependencies written in electron.
+A tool which checks your development pod's dependencies for iOS projects written in electron.
+
+## screenshot
+
+![](./shot.gif)
+
+## development and run
+
+`> electron .`
+
+## Releases
