@@ -2,6 +2,8 @@
 
 A tool which checks your development pod's dependencies for iOS projects written in electron.
 
+[如果你也用 Development Pods](https://zhaoxinyu.me/2017-09-16-development-pods-dependency-checker/)
+
 ## screenshot
 
 ![](./shot.gif)
